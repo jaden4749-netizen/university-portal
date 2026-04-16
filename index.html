@@ -32,57 +32,71 @@
     </div>
 
     <script>
-        // FILL IN YOUR KEYS HERE
-        const supabase = supabase.createClient(https://twghktazmkticvfggaec.supabase.co, sb_publishable_BXu3T08wg8mrr4jBc5vZDg_m9rwv2Fk);
+    // 1. Setup the "Messenger" (Supabase Client)
+    // IMPORTANT: Make sure your URL and Key are inside the 'quotes'
+    const supabaseUrl = 'https://twghktazmkticvfggaec.supabase.co';
+    const supabaseKey = 'sb_secret_JgpronS2rNUyWpXQPC-GPQ_Udh5OroC';
+    
+    // This is the specific way to initialize when using the CDN link
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // --- LOGIN FUNCTION ---
-        async function handleLogin() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+    // 2. The Login Function
+    async function handleLogin() {
+        console.log("Attempting login..."); // This will show in your console
+        
+        const emailInput = document.getElementById('email').value;
+        const passwordInput = document.getElementById('password').value;
 
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
+        // Try to sign in
+        const { data, error } = await _supabase.auth.signInWithPassword({
+            email: emailInput,
+            password: passwordInput
+        });
 
-            if (error) {
-                showStatus(error.message, "danger");
-            } else {
-                showStatus("Logged in successfully!", "success");
-                document.getElementById('login-section').classList.add('d-none');
-                document.getElementById('reg-section').classList.remove('d-none');
-            }
-        }
+        const statusDiv = document.getElementById('status');
+        statusDiv.classList.remove('d-none');
 
-        // --- REGISTRATION FUNCTION ---
-        async function handleRegistration() {
-            const { error } = await supabase.from('class').insert([{ 
-                classid: Math.floor(Math.random() * 100000),
-                cl_date: '2026-09-01', cl_time: 10,
-                courseid: document.getElementById('courseID').value,
-                crs_name: document.getElementById('courseName').value,
-                professorid: 1,
-                studentid: document.getElementById('stuID').value
-            }]);
+        if (error) {
+            console.error("Login Error:", error.message);
+            statusDiv.innerText = "Login Failed: " + error.message;
+            statusDiv.className = "mt-3 alert alert-danger";
+        } else {
+            console.log("Login Success!", data);
+            statusDiv.innerText = "Login Success! Welcome.";
+            statusDiv.className = "mt-3 alert alert-success";
             
-            if (error) {
-                showStatus("Registration Failed: " + error.message, "danger");
-            } else {
-                showStatus("Success! You are enrolled.", "success");
-            }
+            // Swap the GUI screens
+            document.getElementById('login-section').classList.add('d-none');
+            document.getElementById('reg-section').classList.remove('d-none');
         }
+    }
 
-        function handleLogout() {
-            supabase.auth.signOut();
-            location.reload();
-        }
+    // 3. The Registration Function
+    async function handleRegistration() {
+        const sID = document.getElementById('stuID').value;
+        const cID = document.getElementById('courseID').value;
+        const cName = document.getElementById('courseName').value;
 
-        function showStatus(msg, type) {
-            const s = document.getElementById('status');
-            s.className = `mt-3 alert alert-${type}`;
-            s.innerText = msg;
-            s.classList.remove('d-none');
+        const { error } = await _supabase.from('class').insert([{ 
+            classid: Math.floor(Math.random() * 100000),
+            cl_date: '2026-09-01', 
+            cl_time: 10,
+            courseid: cID,
+            crs_name: cName,
+            professorid: 1,
+            studentid: sID
+        }]);
+        
+        const statusDiv = document.getElementById('status');
+        if (error) {
+            statusDiv.innerText = "Registration Error: " + error.message;
+            statusDiv.className = "mt-3 alert alert-danger";
+        } else {
+            statusDiv.innerText = "Success! Enrollment completed.";
+            statusDiv.className = "mt-3 alert alert-success";
         }
-    </script>
+    }
+</script>
+        
 </body>
 </html>

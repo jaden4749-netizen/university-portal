@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>University Registration</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Register for Class</h1>
+    
+    <input type="number" id="stuID" placeholder="Student ID (e.g. 2001)">
+    <input type="number" id="courseID" placeholder="Course ID (e.g. 102)">
+    <input type="text" id="courseName" placeholder="Course Name (e.g. DataMgmt)">
+    
+    <button onclick="handleRegistration()">Register Now</button>
+
+    <p id="message"></p>
+
+    <script>
+        // 1. SET UP THE CONNECTION
+        const _url = https://twghktazmkticvfggaec.supabase.co;
+        const _key = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3Z2hrdGF6bWt0aWN2ZmdnYWVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNTU5NTgsImV4cCI6MjA5MDYzMTk1OH0.SPZWewGInT2B7PpmYWwXNPWlTzLl6qbMj5911xGIpNk;
+        const supabase = supabase.createClient(_url, _key);
+
+        async function handleRegistration() {
+            const sID = document.getElementById('stuID').value;
+            const cID = document.getElementById('courseID').value;
+            const cName = document.getElementById('courseName').value;
+
+            // 2. THE JAVASCRIPT COMMAND
+            const { data, error } = await supabase
+                .from('class') // This must match your table name
+                .insert([
+                    { 
+                        classid: Math.floor(Math.random() * 10000), // Random ID for the project
+                        cl_date: '2026-09-10', 
+                        cl_time: 10,
+                        courseid: cID, 
+                        crs_name: cName,
+                        professorid: 1, 
+                        studentid: sID 
+                    }
+                ]);
+
+            // 3. SHOW THE RESULT
+            if (error) {
+                // If your SQL TRIGGER fails, the error message shows up here!
+                document.getElementById('message').innerText = "FAILED: " + error.message;
+                document.getElementById('message').style.color = "red";
+            } else {
+                document.getElementById('message').innerText = "SUCCESS: You are registered!";
+                document.getElementById('message').style.color = "green";
+            }
+        }
+    </script>
+</body>
+</html>
